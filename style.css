@@ -1,27 +1,52 @@
 
 body,
 main {
-    min-height: 100dvh;
-    justify-items: center;
+    display: flex;
+    min-height: 90dvh;
+    justify-content: center;
     align-items: center;
     background: #f1f2f4;
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif; 
-    
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
 }
 
 .container{
     display: flex;
     flex-direction: column;
-    background: #ffffff;
+    background: #f4f4f4;
     border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(16,24,40,0.08);
+    box-shadow: 0 1px 2px rgba(16,24,40,0.08);
     padding: 1rem;
     border: 1px solid rgba(2, 2, 4, 0.08);
     justify-items: center;
     align-items: center;
 }
 
+#seesaw-container{
+    background: #f9f9f9;
+    width: 80dvh;
+    height: 80dvh;
+    justify-content: space-evenly;
+}
+
+#animation-container{
+    min-height: 40dvh;
+    width: 90%;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(2, 2, 4, 0.08);
+    background: #f4f4f4;
+}
+
 #information-boxes{
     display: flex;
     flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+#log-container{
+    min-height: 10dvh;
+    max-height: 40dvh;
+    overflow-y: auto;
+    width: 90%;
 }
