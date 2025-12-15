@@ -1,0 +1,27 @@
+
+body,
+main {
+    min-height: 100dvh;
+    justify-items: center;
+    align-items: center;
+    background: #f1f2f4;
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif; 
+    
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(16,24,40,0.08);
+    padding: 1rem;
+    border: 1px solid rgba(2, 2, 4, 0.08);
+    justify-items: center;
+    align-items: center;
+}
+
+#information-boxes{
+    display: flex;
+    flex-direction: row;
+}
