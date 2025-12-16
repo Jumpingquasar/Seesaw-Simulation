@@ -1,9 +1,11 @@
 'use strict';
 
 const seesawPlankElement = document.querySelector('#seesaw-plank');
+const seesawClickableArea = document.querySelector('#seesaw');
 const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
 const objects = [];
+let previewObject = null;
 
 // UI Elements for the information box
 const ui = {
@@ -31,6 +33,7 @@ function setSeesawAngle() {
     );
     seesawPlankElement.style.transform = `rotate(${angle}deg)`;
     physicsState.tiltAngle = angle;
+    seesawPlankElement.style.setProperty('--plank-angle', `${angle}deg`);
 }
 
 function addLogMessage (clickX){
@@ -48,12 +51,6 @@ function addLogMessage (clickX){
 
 // Appends new weight to the seesaw plank
 function addWeightToSeesaw(clickX) {
-
-    // Generate a new object and position it
-    // const obj = document.createElement('div');
-    // obj.className = 'object';
-    // obj.style.left = `${clickX}px`;  
-    // seesawPlankElement.appendChild(obj);
 
     // Update left/right physics state
     if (clickX < 0) {
@@ -83,6 +80,25 @@ function updateUI() {
     ui.totalTorque.textContent = `${physicsState.totalTorque.toFixed(1)} kg·pixel`;
 }
 
+
+// Generate a new object and position it
+function createObject(weight, positionX) {
+    const obj = document.createElement('div');
+    const objString = document.createElement('div');
+    const objBall = document.createElement('div');
+    obj.className = 'object';
+    objString.className = 'object-string';
+    objBall.className = 'object-ball';
+    obj.style.left = `${positionX}px`;
+    objBall.style.width = `${weight * 3 + 30}px`;
+    objBall.style.height = `${weight * 3 + 30}px`;
+    objBall.style.backgroundColor = `rgb(${255 / weight * 2.5}, 70, 50)`;
+    objString.style.height = `${weight * 4 + 10}px`;
+    obj.appendChild(objString);
+    obj.appendChild(objBall);
+    seesawPlankElement.appendChild(obj);
+}
+
 // Resets the entire app state
 function resetApp() {
     physicsState.leftWeight = 0;
@@ -97,17 +113,56 @@ function resetApp() {
     updateUI();
 }
 
+// Creates the preview object that follows the mouse
+function createPreviewObject() {
+    const objBall = document.createElement('div');
+    objBall.className = 'object-ball';
+
+    objBall.style.width = `${physicsState.currentWeight * 3 + 30}px`;
+    objBall.style.height = `${physicsState.currentWeight * 3 + 30}px`;
+    objBall.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
+
+    objBall.classList.add('preview');
+    seesawClickableArea.appendChild(objBall);
+    previewObject = objBall;
+}
+
 // Listens for clicks on the seesaw plank
-seesawPlankElement.addEventListener('click', (event) => {
+seesawClickableArea.addEventListener('click', (event) => {
     const rect = seesawPlankElement.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
-
     addWeightToSeesaw(clickX - centerX);
+    createObject(physicsState.currentWeight, clickX);
 });
 
 // Listens for clicks on the reset button
 resetButton.addEventListener('click', resetApp);
 
-// Called once at startup to initialize the UI
-updateUI()
+// Update preview object position on mouse move
+seesawClickableArea.addEventListener('mousemove', (e) => {
+    if (!previewObject) return;
+    const x = e.clientX - 15;
+
+    previewObject.style.up = `-50px`;
+    previewObject.style.left = `${x}px`;
+});
+
+// Show/hide preview object on mouse enter/leave
+seesawClickableArea.addEventListener('mouseenter', () => {
+    previewObject.style.display = 'flex';
+});
+
+// Hide preview object when mouse leaves the seesaw area
+seesawClickableArea.addEventListener('mouseleave', () => {
+    previewObject.style.display = 'none';
+});
+
+function init() {
+    createPreviewObject();
+
+    // Called once at startup to initialize the UI
+    updateUI()
+}
+
+init();

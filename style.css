@@ -53,6 +53,8 @@ main {
     border-left: 20px solid transparent;
     border-right: 20px solid transparent;
     border-bottom: 30px solid #4d2a19;
+    margin-top: -5px;
+    z-index: 0;
 }
 
 #seesaw {
@@ -60,6 +62,8 @@ main {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    height: 100%;    
+    cursor: pointer;
 }
 
 #seesaw-plank {
@@ -67,8 +71,7 @@ main {
     width: 50dvh;
     height: 1.2dvh;
     background: #8b5a2b;
-    border-radius: 6px;
-    cursor: pointer;
+    z-index: 1;
 }
 
 #reset-button {
@@ -129,4 +132,45 @@ main {
   color: #333;
   background-color: #fff;
   animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes dropWeight {
+  from {
+    transform: translateY(-50px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.object{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+    transform-origin: top center;
+    transform: rotateZ(calc(-1 * var(--plank-angle)));
+    transition: transform 0.5s ease;
+}
+
+.object-string {
+    width: 0.5px;
+    height: 30px;
+    background-color: #0000004e;
+}
+
+.object-ball {
+    width: 30px;
+    height: 30px;
+    background: #4a90e2;
+    border-radius: 50%;
+    animation: dropWeight 0.1s ease forwards;
+}
+
+.object-ball.preview {
+  position: absolute;
+    pointer-events: none;
+    opacity: 0.4;
+    filter: grayscale(1);
+    transform: translateX(-50%);
 }
