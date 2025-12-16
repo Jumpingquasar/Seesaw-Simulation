@@ -33,6 +33,19 @@ function setSeesawAngle() {
     physicsState.tiltAngle = angle;
 }
 
+function addLogMessage (clickX){
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+
+    const side = clickX < 0 ? 'left' : 'right';
+    const absDistance = Math.abs(clickX).toFixed(2);
+
+    entry.textContent = `Added ${physicsState.currentWeight} kg on the ${side} side, ${absDistance}px from the center.`;
+
+    logContainer.appendChild(entry);
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
 // Appends new weight to the seesaw plank
 function addWeightToSeesaw(clickX) {
 
@@ -51,6 +64,7 @@ function addWeightToSeesaw(clickX) {
 
     // Calculate the total torque of the system
     physicsState.totalTorque += physicsState.currentWeight * (clickX);
+    addLogMessage(clickX);
 
     // Set the new angle of the seesaw
     setSeesawAngle();
@@ -78,6 +92,7 @@ function resetApp() {
     objects.length = 0;
     seesawPlankElement.style.transform = 'rotate(0deg)';
     seesawPlankElement.innerHTML = '';
+    logContainer.innerHTML = '';
     updateUI();
 }
 
@@ -91,4 +106,5 @@ seesawPlankElement.addEventListener('click', (event) => {
 // Listens for clicks on the reset button
 resetButton.addEventListener('click', resetApp);
 
+// Called once at startup to initialize the UI
 updateUI()
