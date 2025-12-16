@@ -23,7 +23,7 @@ main {
 
 #app-container{
     background: #f9f9f9;
-    width: 80dvh;
+    width: 100dvh;
     height: 80dvh;
     justify-content: space-evenly;
 }
@@ -31,7 +31,7 @@ main {
 #seesaw-container{
     display: flex;
     height: 40dvh;
-    width: 75dvh;
+    width: 90dvh;
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid rgba(2, 2, 4, 0.08);
@@ -43,14 +43,14 @@ main {
 #information-boxes{
     display: flex;
     flex-direction: row;
-    width: 75dvh;
-    justify-content: space-evenly;
+    width: 90dvh;
+    justify-content: space-between;
 }
 
 #log-container{
     height: 10dvh;
     overflow-y: auto;
-    width: 75dvh;
+    width: 90dvh;
 }
 
 #pivot {
@@ -75,4 +75,31 @@ main {
     background: #8b5a2b;
     border-radius: 6px;
     cursor: pointer;
+}
+
+#reset-button {
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    border: 1px solid #5a3a1d;
+    color: #fff;
+    background-color: #8b592b;
+
+  transition: 
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
+}
+
+#reset-button:hover {
+  background-color: #8b592b83;
+  color: #fff;
+}
+
+#reset-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) inset;
 }

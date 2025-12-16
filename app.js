@@ -1,20 +1,36 @@
 'use strict';
 
 const seesawPlankElement = document.querySelector('#seesaw-plank');
+const resetButton = document.getElementById('reset-button');
 const plankCenterX = seesawPlankElement.offsetWidth / 2;
-var currentWeight = 10;
-var totalTorque = 0;
-var leftWeight = 0;
-var rightWeight = 0;
 const objects = [];
+
+// UI Elements for the information box
+const ui = {
+    leftWeight: document.getElementById('left-weight-value'),
+    rightWeight: document.getElementById('right-weight-value'),
+    currentWeight: document.getElementById('next-weight-value'),
+    totalTorque: document.getElementById('torque-value'),
+    tiltAngle: document.getElementById('tilt-value')
+}
+
+// Physics state of the seesaw system
+const physicsState = {
+  leftWeight: 0,
+  rightWeight: 0,
+  currentWeight: 1,
+  totalTorque: 0,
+  tiltAngle: 0
+};
 
 // Sets the angle of the seesaw plank
 function setSeesawAngle() {
     const angle = Math.max(
         -30,
-        Math.min(30, totalTorque)
+        Math.min(30, physicsState.totalTorque / 100)
     );
     seesawPlankElement.style.transform = `rotate(${angle}deg)`;
+    physicsState.tiltAngle = angle;
 }
 
 // Appends new weight to the seesaw plank
@@ -26,17 +42,43 @@ function addWeightToSeesaw(clickX) {
     obj.style.left = `${clickX}px`;  
     seesawPlankElement.appendChild(obj);
 
+    // Update left/right physics state
+    if (clickX < 0) {
+        physicsState.leftWeight += physicsState.currentWeight;
+    } else {
+        physicsState.rightWeight += physicsState.currentWeight;
+    }
+
     // Calculate the total torque of the system
-    totalTorque += currentWeight * (clickX) / 100;
+    physicsState.totalTorque += physicsState.currentWeight * (clickX);
 
     // Set the new angle of the seesaw
     setSeesawAngle();
 
     // Randomize the next weight
-    currentWeight = Math.floor(Math.random() * 10) + 1;
-    document.querySelector('#next-weight-value').textContent = `${currentWeight} kg`;
-    console.log(`Added weight: ${currentWeight} kg at position: ${clickX}px`);
-    console.log(totalTorque);
+    physicsState.currentWeight = Math.floor(Math.random() * 10) + 1;
+    updateUI();
+}
+
+function updateUI() {
+    ui.leftWeight.textContent = `${physicsState.leftWeight} kg`;
+    ui.rightWeight.textContent = `${physicsState.rightWeight} kg`;
+    ui.currentWeight.textContent = `${physicsState.currentWeight} kg`;
+    ui.tiltAngle.textContent = `${physicsState.tiltAngle.toFixed(2)} deg`;
+    ui.totalTorque.textContent = `${physicsState.totalTorque.toFixed(1)} kg·pixel`;
+}
+
+// Resets the entire app state
+function resetApp() {
+    physicsState.leftWeight = 0;
+    physicsState.rightWeight = 0;
+    physicsState.currentWeight = 1;
+    physicsState.totalTorque = 0;
+    physicsState.tiltAngle = 0;
+    objects.length = 0;
+    seesawPlankElement.style.transform = 'rotate(0deg)';
+    seesawPlankElement.innerHTML = '';
+    updateUI();
 }
 
 // Listens for clicks on the seesaw plank
@@ -45,3 +87,8 @@ seesawPlankElement.addEventListener('click', (event) => {
     const x = event.clientX - rect.left
     addWeightToSeesaw(x - plankCenterX);
 });
+
+// Listens for clicks on the reset button
+resetButton.addEventListener('click', resetApp);
+
+updateUI()
