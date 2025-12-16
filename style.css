@@ -2,7 +2,7 @@
 body,
 main {
     display: flex;
-    min-height: 90dvh;
+    height: 90dvh;
     justify-content: center;
     align-items: center;
     background: #f1f2f4;
@@ -21,32 +21,58 @@ main {
     align-items: center;
 }
 
-#seesaw-container{
+#app-container{
     background: #f9f9f9;
     width: 80dvh;
     height: 80dvh;
     justify-content: space-evenly;
 }
 
-#animation-container{
-    min-height: 40dvh;
-    width: 90%;
+#seesaw-container{
+    display: flex;
+    height: 40dvh;
+    width: 75dvh;
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid rgba(2, 2, 4, 0.08);
     background: #f4f4f4;
+    justify-content: center;
+    align-items: center;
 }
 
 #information-boxes{
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: 75dvh;
     justify-content: space-evenly;
 }
 
 #log-container{
-    min-height: 10dvh;
-    max-height: 40dvh;
+    height: 10dvh;
     overflow-y: auto;
-    width: 90%;
+    width: 75dvh;
+}
+
+#pivot {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #4d2a19;
+}
+
+#seesaw {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+#seesaw-plank {
+    transition: transform 0.5s ease;
+    width: 50dvh;
+    height: 1.2dvh;
+    background: #8b5a2b;
+    border-radius: 6px;
+    cursor: pointer;
 }

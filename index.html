@@ -8,27 +8,34 @@
   </head>
   <body>
     <main id="app">
-      <div class="container" id="seesaw-container">
+      <div class="container" id="app-container">
         <div id="information-boxes">
           <div class="container">
             <div class="information-label">Left Weight</div>
-            <div class="information-value">0 kg</div>
+            <div class="information-value" id="left-weight-value">0 kg</div>
           </div>
           <div class="container">
             <div class="information-label">Next Weight</div>
-            <div class="information-value">0 kg</div>
+            <div class="information-value" id="next-weight-value">0 kg</div>
           </div>
           <div class="container">
             <div class="information-label">Right Weight</div>
-            <div class="information-value">0 kg</div>
+            <div class="information-value" id="right-weight-value">0 kg</div>
           </div>
           <div class="container">
-            <div class="information-label">Left Weight</div>
-            <div class="information-value">0 kg</div>
+            <div class="information-label">Total Torque</div>
+            <div class="information-value" id="torque-value">0 kg</div>
+          </div>
+          <div class="container">
+            <div class="information-label">Tilt Angle</div>
+            <div class="information-value" id="tilt-value">0 kg</div>
           </div>
         </div>
-        <div id="animation-container">
-          <!-- Seesaw component will be added here -->
+        <div id="seesaw-container">
+          <div id="seesaw">
+            <div id="seesaw-plank"></div>
+            <div id="pivot"></div>
+          </div>
         </div>
         <div id="reset-button-container">
           <!-- Reset button will be here -->
