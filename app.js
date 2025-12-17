@@ -25,6 +25,13 @@ const physicsState = {
   tiltAngle: 0
 };
 
+
+// State to be persisted across sessions
+const persistedState = {
+    objects,
+    physicsState
+};
+
 // Sets the angle of the seesaw plank
 function setSeesawAngle() {
     const angle = Math.max(
@@ -38,14 +45,14 @@ function setSeesawAngle() {
     seesawPlankElement.style.setProperty('--plank-angle', `${angle}deg`);
 }
 
-function addLogMessage (clickX){
+function addLogMessage (clickX, weight){
     const entry = document.createElement('div');
     entry.className = 'log-entry';
 
     const side = clickX < 0 ? 'left' : 'right';
     const absDistance = Math.abs(clickX).toFixed(2);
 
-    entry.textContent = `Added ${physicsState.currentWeight} kg on the ${side} side, ${absDistance}px from the center.`;
+    entry.textContent = `Added ${weight || physicsState.currentWeight} kg on the ${side} side, ${absDistance}px from the center.`;
 
     logContainer.appendChild(entry);
     logContainer.scrollTop = logContainer.scrollHeight;
@@ -91,19 +98,21 @@ function updateUI() {
     previewObject.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
 }
 
-
-// Generate a new object and position it
-function createObject(weight, positionX) {
+// Renders an object on the seesaw plank
+function renderObject(weight, positionX) {
     const obj = document.createElement('div');
     const objString = document.createElement('div');
     const objBall = document.createElement('div');
     const objWeightText = document.createElement('div');
+
     obj.className = 'object';
     objString.className = 'object-string';
     objBall.className = 'object-ball';
     objWeightText.className = 'object-weight-text';
+
     objWeightText.textContent = `${weight} kg`;
     obj.style.left = `${positionX - 30}px`;
+
     objBall.style.width = `${weight * 3 + 50}px`;
     objBall.style.height = `${weight * 3 + 50}px`;
     objBall.style.backgroundColor = `rgb(${255 / weight * 2.5}, 70, 50)`;
@@ -113,6 +122,13 @@ function createObject(weight, positionX) {
     obj.appendChild(objBall);
     objBall.appendChild(objWeightText);
     seesawPlankElement.appendChild(obj);
+}
+
+//  Adds an object to the seesaw and updates state
+function addObject(weight, positionX) {
+    objects.push({ weight, positionX });
+    renderObject(weight, positionX);
+    saveState();
 }
 
 // Resets the entire app state
@@ -126,6 +142,7 @@ function resetApp() {
     seesawPlankElement.style.transform = 'rotate(0deg)';
     seesawPlankElement.innerHTML = '';
     logContainer.innerHTML = '';
+    localStorage.removeItem('seesaw-state');
     updateUI();
 }
 
@@ -153,7 +170,7 @@ seesawClickableArea.addEventListener('click', (event) => {
     const rect = seesawClickableArea.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
-    createObject(physicsState.currentWeight, clickX);
+    addObject(physicsState.currentWeight, clickX);
     addWeightToSeesaw(clickX - centerX);
 });
 
@@ -178,11 +195,56 @@ seesawClickableArea.addEventListener('mouseleave', () => {
     previewObject.style.display = 'none';
 });
 
+
+// Saves the current state to localStorage for persistence
+function saveState() {
+  const data = {
+    objects,
+    physicsState
+  };
+
+  console.log('Saving state...', data);
+  localStorage.setItem('seesaw-state', JSON.stringify(data));
+}
+
+
+// Load the cached state from localStorage
+function loadState() {
+    console.log('Loading state...');
+    const data = localStorage.getItem('seesaw-state');
+    if (!data) {
+        console.log('No saved state found.')
+        return
+    };
+
+    const parsed = JSON.parse(data);
+    console.log('Loaded state:', parsed);
+
+    // Restore state
+    objects.length = 0;
+    objects.push(...parsed.objects);
+    Object.assign(physicsState, parsed.physicsState);
+
+    // Clear DOM
+    seesawPlankElement.innerHTML = '';
+    logContainer.innerHTML = '';
+
+    // Rebuild visuals
+    objects.forEach(obj => {
+        renderObject(obj.weight, obj.positionX);
+        const centerX = seesawClickableArea.getBoundingClientRect().width / 2;
+        addLogMessage(obj.positionX - centerX, obj.weight);
+    });
+
+    // Reapply physics
+    setSeesawAngle();
+    updateUI();
+}
+
 function init() {
     createPreviewObject();
-
-    // Called once at startup to initialize the UI
-    updateUI()
+    loadState()
 }
+
 
 init();
