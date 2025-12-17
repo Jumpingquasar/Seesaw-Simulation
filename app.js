@@ -1,5 +1,14 @@
 'use strict';
 
+// Gate that blocks loadState until tests finish
+window.__testsDoneGate = window.__testsDoneGate || {};
+
+window.__testsDoneGate.promise =
+  window.__testsDoneGate.promise ||
+  new Promise(resolve => {
+    window.__testsDoneGate.resolve = resolve;
+  });
+
 const seesawPlankElement = document.querySelector('#seesaw-plank');
 const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
@@ -131,7 +140,7 @@ function addObject(weight, positionX) {
 }
 
 // Resets the entire app state
-function resetApp() {    
+function resetApp(isInit) {    
     if (audioUnlocked) newPageSound.play();
     physicsState.leftWeight = 0;
     physicsState.rightWeight = 0;
@@ -142,7 +151,7 @@ function resetApp() {
     seesawPlankElement.style.transform = 'rotate(0deg)';
     seesawPlankElement.innerHTML = '';
     logContainer.innerHTML = '';
-    localStorage.removeItem('seesaw-state');
+    !isInit && localStorage.removeItem('seesaw-state');
     updateUI();
 }
 
@@ -201,9 +210,9 @@ function rebuildFromState() {
     updateUI();
 }
 
-
 // Load the cached state from localStorage
 function loadState() {
+    resetApp(true)
     console.log('Loading state...');
     const data = localStorage.getItem('seesaw-state');
     if (!data) {
@@ -222,20 +231,25 @@ function loadState() {
     rebuildFromState() 
 }
 
-function init() {
-    loadState()
+async function init() {
+    // Expose hooks for browser-based tests
+    if (typeof window !== 'undefined') {
+        window.AppTest = {
+            physicsState,
+            addWeightToSeesaw,
+            setSeesawAngle,
+            updateUI,
+            resetApp
+        };
+    }
+
+    // wait for tests to finish
+    if (window.__testsDoneGate?.promise) {
+        await window.__testsDoneGate.promise;
+    }
+
+    loadState();
 }
 
 
 init();
-
-// Expose hooks for browser-based tests
-if (typeof window !== 'undefined') {
-    window.AppTest = {
-        physicsState,
-        addWeightToSeesaw,
-        setSeesawAngle,
-        updateUI,
-        resetApp
-    };
-}

@@ -2,7 +2,6 @@
 
 (function runAppTests() {
   if (typeof window === 'undefined' || !window.AppTest) {
-    debugger
     // Not running in browser or AppTest not available; skip.
     return;
   }
@@ -16,7 +15,6 @@
   }
 
   function testAddWeightToSeesawLeft() {
-    resetApp();
     addWeightToSeesaw(-20);
 
     assert(physicsState.leftWeight === 5, 'leftWeight should increase by currentWeight');
@@ -30,7 +28,6 @@
 
   function testAddWeightToSeesawRight() {
     // Reset physics and DOM expectations
-    resetApp();
     const logContainer = document.getElementById('log-container');
     const initialLogCount = logContainer
       ? logContainer.querySelectorAll('.log-entry').length
@@ -79,8 +76,10 @@
   testAddWeightToSeesawLeft();
   testAddWeightToSeesawRight();
 
-  // Reset the state
-  resetApp()
-
   console.log('[AppTest] App browser tests executed (see console for any failures).');
+
+    // Signal that browser tests are finished
+  if (window.__testsDoneGate?.resolve) {
+    window.__testsDoneGate.resolve();
+  }
 })();
