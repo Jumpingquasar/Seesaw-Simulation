@@ -149,9 +149,8 @@ main {
     flex-direction: column;
     align-items: center;
     width: 60px;
-    transform-origin: top left;
+    transform-origin: top center;
     transform:
-      translateY(var(--offset-correction))
       rotateZ(calc(-1 * var(--plank-angle)));
     transition: transform 0.5s ease;
 }

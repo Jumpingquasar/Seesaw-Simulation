@@ -36,7 +36,6 @@ function setSeesawAngle() {
 
     // Update CSS variables for the seesaw plank rotation correction
     seesawPlankElement.style.setProperty('--plank-angle', `${angle}deg`);
-    seesawPlankElement.style.setProperty('--offset-correction', `${Math.sin(angle)}dvh`);
 }
 
 function addLogMessage (clickX){
@@ -104,11 +103,12 @@ function createObject(weight, positionX) {
     objBall.className = 'object-ball';
     objWeightText.className = 'object-weight-text';
     objWeightText.textContent = `${weight} kg`;
-    obj.style.left = `${positionX}px`;
+    obj.style.left = `${positionX - 30}px`;
     objBall.style.width = `${weight * 3 + 50}px`;
     objBall.style.height = `${weight * 3 + 50}px`;
     objBall.style.backgroundColor = `rgb(${255 / weight * 2.5}, 70, 50)`;
     objString.style.height = `${weight * 4 + 10}px`;
+
     obj.appendChild(objString);
     obj.appendChild(objBall);
     objBall.appendChild(objWeightText);
@@ -150,7 +150,7 @@ function createPreviewObject() {
 
 // Listens for clicks on the seesaw plank
 seesawClickableArea.addEventListener('click', (event) => {
-    const rect = seesawPlankElement.getBoundingClientRect();
+    const rect = seesawClickableArea.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
     createObject(physicsState.currentWeight, clickX);
@@ -163,7 +163,7 @@ resetButton.addEventListener('click', resetApp);
 // Update preview object position on mouse move
 seesawClickableArea.addEventListener('mousemove', (e) => {
     if (!previewObject) return;
-    const x = e.clientX - 15;
+    const x = e.clientX - 30;
 
     previewObject.style.left = `${x}px`;
 });
