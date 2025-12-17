@@ -5,6 +5,10 @@ const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
 const objects = [];
 
+// Initialize drop sound effect
+const dropSound = new Audio('sound/pop.wav');
+const newPageSound = new Audio('sound/new-page.wav');
+
 // UI Elements for the information box
 const ui = {
     leftWeight: document.getElementById('left-weight-value'),
@@ -93,7 +97,7 @@ function renderObject(weight, positionX) {
     const rect = seesawPlankElement.getBoundingClientRect();
     const centerX = rect.width / 2;
     const distanceFromCenter = positionX - centerX;
-    const rotationCorrection = (distanceFromCenter > 0 ? 42 : -42) * Math.abs(physicsState.tiltAngle) * (Math.PI / 180);
+    const rotationCorrection = distanceFromCenter * 42/200 * Math.abs(physicsState.tiltAngle) * (Math.PI / 180);
     const obj = document.createElement('div');
     const objString = document.createElement('div');
     const objBall = document.createElement('div');
@@ -127,6 +131,7 @@ function addObject(weight, positionX) {
 
 // Resets the entire app state
 function resetApp() {
+    newPageSound.play();
     physicsState.leftWeight = 0;
     physicsState.rightWeight = 0;
     physicsState.currentWeight = 5;
@@ -145,13 +150,21 @@ seesawPlankElement.addEventListener('click', (event) => {
     const rect = seesawPlankElement.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
+    playDropSound();
     addObject(physicsState.currentWeight, clickX);
-    addWeightToSeesaw(clickX - centerX);    
+    addWeightToSeesaw(clickX - centerX);
     saveState();
 });
 
 // Listens for clicks on the reset button
 resetButton.addEventListener('click', resetApp);
+
+// Plays the drop sound effect
+function playDropSound() {
+    const sound = dropSound.cloneNode();
+    sound.volume = Math.max(0.2, physicsState.currentWeight / 10);
+    sound.play();
+}
 
 // Saves the current state to localStorage for persistence
 function saveState() {
