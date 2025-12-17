@@ -162,7 +162,7 @@ resetButton.addEventListener('click', resetApp);
 // Plays the drop sound effect
 function playDropSound() {
     const sound = dropSound.cloneNode();
-    sound.volume = Math.max(0.2, physicsState.currentWeight / 10);
+    sound.volume = Math.max(0.2, physicsState.currentWeight / 15);
     sound.play();
 }
 
