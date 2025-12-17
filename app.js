@@ -1,7 +1,6 @@
 'use strict';
 
 const seesawPlankElement = document.querySelector('#seesaw-plank');
-const seesawClickableArea = document.querySelector('#seesaw');
 const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
 const objects = [];
@@ -146,28 +145,9 @@ function resetApp() {
     updateUI();
 }
 
-// Creates the preview object that follows the mouse
-function createPreviewObject() {
-    const objBall = document.createElement('div');    
-    const objWeightText = document.createElement('b');
-    objBall.className = 'object-ball';
-    objWeightText.className = 'object-weight-text';
-    
-    objWeightText.textContent = `${physicsState.currentWeight} kg`;
-    objBall.style.width = `${physicsState.currentWeight * 3 + 50}px`;
-    objBall.style.height = `${physicsState.currentWeight * 3 + 50}px`;
-    objBall.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
-    
-    objBall.appendChild(objWeightText);
-    objBall.id = 'preview-object-text';
-    objBall.classList.add('preview');
-    seesawClickableArea.appendChild(objBall);
-    previewObject = objBall;
-}
-
 // Listens for clicks on the seesaw plank
-seesawClickableArea.addEventListener('click', (event) => {
-    const rect = seesawClickableArea.getBoundingClientRect();
+seesawPlankElement.addEventListener('click', (event) => {
+    const rect = seesawPlankElement.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
     addObject(physicsState.currentWeight, clickX);
@@ -176,25 +156,6 @@ seesawClickableArea.addEventListener('click', (event) => {
 
 // Listens for clicks on the reset button
 resetButton.addEventListener('click', resetApp);
-
-// Update preview object position on mouse move
-seesawClickableArea.addEventListener('mousemove', (e) => {
-    if (!previewObject) return;
-    const x = e.clientX - 30;
-
-    previewObject.style.left = `${x}px`;
-});
-
-// Show/hide preview object on mouse enter/leave
-seesawClickableArea.addEventListener('mouseenter', () => {
-    previewObject.style.display = 'flex';
-});
-
-// Hide preview object when mouse leaves the seesaw area
-seesawClickableArea.addEventListener('mouseleave', () => {
-    previewObject.style.display = 'none';
-});
-
 
 // Saves the current state to localStorage for persistence
 function saveState() {
@@ -232,7 +193,7 @@ function loadState() {
     // Rebuild visuals
     objects.forEach(obj => {
         renderObject(obj.weight, obj.positionX);
-        const centerX = seesawClickableArea.getBoundingClientRect().width / 2;
+        const centerX = seesawPlankElement.getBoundingClientRect().width / 2;
         addLogMessage(obj.positionX - centerX, obj.weight);
     });
 
@@ -242,7 +203,6 @@ function loadState() {
 }
 
 function init() {
-    createPreviewObject();
     loadState()
 }
 
