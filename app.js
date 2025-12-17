@@ -4,7 +4,6 @@ const seesawPlankElement = document.querySelector('#seesaw-plank');
 const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
 const objects = [];
-let previewObject = null;
 
 // UI Elements for the information box
 const ui = {
@@ -82,23 +81,18 @@ function addWeightToSeesaw(clickX) {
 // Updates the information box UI
 function updateUI() {
     
-    // Get current preview object text element
-    const previewObjectText = document.getElementById('preview-object-text');
-    const previewObject = document.querySelector('.object-ball.preview');
-
     ui.leftWeight.textContent = `${physicsState.leftWeight} kg`;
     ui.rightWeight.textContent = `${physicsState.rightWeight} kg`;
     ui.currentWeight.textContent = `${physicsState.currentWeight} kg`;
     ui.tiltAngle.textContent = `${physicsState.tiltAngle.toFixed(2)}°`;
     ui.totalTorque.textContent = `${physicsState.totalTorque.toFixed(1)} kg·pixel`;
-    previewObjectText.textContent = `${physicsState.currentWeight} kg`;
-    previewObject.style.width = `${physicsState.currentWeight * 3 + 50}px`;
-    previewObject.style.height = `${physicsState.currentWeight * 3 + 50}px`;
-    previewObject.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
 }
 
 // Renders an object on the seesaw plank
 function renderObject(weight, positionX) {
+    const rect = seesawPlankElement.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const distanceFromCenter = positionX - centerX;
     const obj = document.createElement('div');
     const objString = document.createElement('div');
     const objBall = document.createElement('div');
@@ -110,12 +104,13 @@ function renderObject(weight, positionX) {
     objWeightText.className = 'object-weight-text';
 
     objWeightText.textContent = `${weight} kg`;
-    obj.style.left = `${positionX - 30}px`;
+    obj.style.setProperty('--offset-x', `${distanceFromCenter - 30}px`);
 
     objBall.style.width = `${weight * 3 + 50}px`;
     objBall.style.height = `${weight * 3 + 50}px`;
     objBall.style.backgroundColor = `rgb(${255 / weight * 2.5}, 70, 50)`;
     objString.style.height = `${weight * 4 + 10}px`;
+    
 
     obj.appendChild(objString);
     obj.appendChild(objBall);
@@ -127,7 +122,6 @@ function renderObject(weight, positionX) {
 function addObject(weight, positionX) {
     objects.push({ weight, positionX });
     renderObject(weight, positionX);
-    saveState();
 }
 
 // Resets the entire app state
@@ -151,7 +145,8 @@ seesawPlankElement.addEventListener('click', (event) => {
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
     addObject(physicsState.currentWeight, clickX);
-    addWeightToSeesaw(clickX - centerX);
+    addWeightToSeesaw(clickX - centerX);    
+    saveState();
 });
 
 // Listens for clicks on the reset button
@@ -166,6 +161,21 @@ function saveState() {
 
   console.log('Saving state...', data);
   localStorage.setItem('seesaw-state', JSON.stringify(data));
+}
+
+function rebuildFromState() {
+    seesawPlankElement.innerHTML = '';
+    logContainer.innerHTML = '';
+    const plankRect = seesawPlankElement.getBoundingClientRect();
+    const centerX = plankRect.width / 2;
+
+    for (const obj of objects) {
+        renderObject(obj.weight, obj.positionX);
+        addLogMessage(obj.positionX - centerX, obj.weight);
+    }
+
+    setSeesawAngle();
+    updateUI();
 }
 
 
@@ -186,20 +196,7 @@ function loadState() {
     objects.push(...parsed.objects);
     Object.assign(physicsState, parsed.physicsState);
 
-    // Clear DOM
-    seesawPlankElement.innerHTML = '';
-    logContainer.innerHTML = '';
-
-    // Rebuild visuals
-    objects.forEach(obj => {
-        renderObject(obj.weight, obj.positionX);
-        const centerX = seesawPlankElement.getBoundingClientRect().width / 2;
-        addLogMessage(obj.positionX - centerX, obj.weight);
-    });
-
-    // Reapply physics
-    setSeesawAngle();
-    updateUI();
+    rebuildFromState() 
 }
 
 function init() {

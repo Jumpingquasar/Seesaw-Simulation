@@ -2,7 +2,9 @@
 body,
 main {
   display: flex;
-  height: 90dvh;
+  min-height: 100vh;
+  min-width: 50vh;
+  overflow: auto;
   justify-content: center;
   align-items: center;
   background: #715d4a;
@@ -23,15 +25,15 @@ main {
 
 #app-container{
   background: #f9f9f9;
-  width: 100dvh;
-  height: 80dvh;
+  width: 1000px;
+  height: 800px;
   justify-content: space-evenly;
 }
 
 #seesaw-container{
   display: flex;
-  height: 40dvh;
-  width: 90dvh;
+  height: 450px;
+  width: 900px;
   padding: 1rem;
   border-radius: 8px;
   border: 1px solid rgba(2, 2, 4, 0.08);
@@ -43,7 +45,7 @@ main {
 #information-boxes{
   display: flex;
   flex-direction: row;
-  width: 90dvh;
+  width: 900px;
   justify-content: space-between;
 }
 
@@ -68,11 +70,12 @@ main {
 #seesaw-plank {
   position: relative;
   transition: transform 0.5s ease;
-  width: 50dvh;
-  height: 1.2dvh;
+  width: 400px;
+  height: 12px;
   background: #8b5a2b;
   z-index: 1;
   cursor: pointer;
+  transform-origin: top center;
 }
 
 #reset-button {
@@ -108,8 +111,8 @@ main {
   background: #8b592b25;
   border-radius: 6px;
   font-size: 13px;
-  height: 10dvh;
-  width: 60dvh;
+  height: 100px;
+  width: 600px;
   align-items: flex-start;
 }
 
@@ -145,13 +148,18 @@ main {
 }
 
 .object{
+  pointer-events: none;
   position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 60px;
+  justify-content: center;
+  left: 50%;
   transform-origin: top center;
-  transform:
+
+  transform: 
+    translateX(var(--offset-x))
     rotateZ(calc(-1 * var(--plank-angle)));
   transition: transform 0.5s ease;
 }
