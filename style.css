@@ -67,6 +67,7 @@ main {
 }
 
 #seesaw-plank {
+    position: relative;
     transition: transform 0.5s ease;
     width: 50dvh;
     height: 1.2dvh;
@@ -147,9 +148,11 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    transform: translateX(-50%);
-    transform-origin: top center;
-    transform: rotateZ(calc(-1 * var(--plank-angle)));
+    width: 60px;
+    transform-origin: top left;
+    transform:
+      translateY(var(--offset-correction))
+      rotateZ(calc(-1 * var(--plank-angle)));
     transition: transform 0.5s ease;
 }
 
@@ -160,11 +163,20 @@ main {
 }
 
 .object-ball {
+  display: flex;
     width: 30px;
     height: 30px;
     background: #4a90e2;
     border-radius: 50%;
     animation: dropWeight 0.1s ease forwards;
+    justify-content: center;
+    align-items: center;
+}
+
+.object-weight-text {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ffffff;
 }
 
 .object-ball.preview {
@@ -173,4 +185,5 @@ main {
     opacity: 0.4;
     filter: grayscale(1);
     transform: translateX(-50%);
+    top: 25dvh;
 }

@@ -33,7 +33,10 @@ function setSeesawAngle() {
     );
     seesawPlankElement.style.transform = `rotate(${angle}deg)`;
     physicsState.tiltAngle = angle;
+
+    // Update CSS variables for the seesaw plank rotation correction
     seesawPlankElement.style.setProperty('--plank-angle', `${angle}deg`);
+    seesawPlankElement.style.setProperty('--offset-correction', `${Math.sin(angle)}dvh`);
 }
 
 function addLogMessage (clickX){
@@ -73,11 +76,20 @@ function addWeightToSeesaw(clickX) {
 
 // Updates the information box UI
 function updateUI() {
+    
+    // Get current preview object text element
+    const previewObjectText = document.getElementById('preview-object-text');
+    const previewObject = document.querySelector('.object-ball.preview');
+
     ui.leftWeight.textContent = `${physicsState.leftWeight} kg`;
     ui.rightWeight.textContent = `${physicsState.rightWeight} kg`;
     ui.currentWeight.textContent = `${physicsState.currentWeight} kg`;
     ui.tiltAngle.textContent = `${physicsState.tiltAngle.toFixed(2)}°`;
     ui.totalTorque.textContent = `${physicsState.totalTorque.toFixed(1)} kg·pixel`;
+    previewObjectText.textContent = `${physicsState.currentWeight} kg`;
+    previewObject.style.width = `${physicsState.currentWeight * 3 + 50}px`;
+    previewObject.style.height = `${physicsState.currentWeight * 3 + 50}px`;
+    previewObject.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
 }
 
 
@@ -86,16 +98,20 @@ function createObject(weight, positionX) {
     const obj = document.createElement('div');
     const objString = document.createElement('div');
     const objBall = document.createElement('div');
+    const objWeightText = document.createElement('div');
     obj.className = 'object';
     objString.className = 'object-string';
     objBall.className = 'object-ball';
+    objWeightText.className = 'object-weight-text';
+    objWeightText.textContent = `${weight} kg`;
     obj.style.left = `${positionX}px`;
-    objBall.style.width = `${weight * 3 + 30}px`;
-    objBall.style.height = `${weight * 3 + 30}px`;
+    objBall.style.width = `${weight * 3 + 50}px`;
+    objBall.style.height = `${weight * 3 + 50}px`;
     objBall.style.backgroundColor = `rgb(${255 / weight * 2.5}, 70, 50)`;
     objString.style.height = `${weight * 4 + 10}px`;
     obj.appendChild(objString);
     obj.appendChild(objBall);
+    objBall.appendChild(objWeightText);
     seesawPlankElement.appendChild(obj);
 }
 
@@ -115,13 +131,18 @@ function resetApp() {
 
 // Creates the preview object that follows the mouse
 function createPreviewObject() {
-    const objBall = document.createElement('div');
+    const objBall = document.createElement('div');    
+    const objWeightText = document.createElement('b');
     objBall.className = 'object-ball';
-
-    objBall.style.width = `${physicsState.currentWeight * 3 + 30}px`;
-    objBall.style.height = `${physicsState.currentWeight * 3 + 30}px`;
+    objWeightText.className = 'object-weight-text';
+    
+    objWeightText.textContent = `${physicsState.currentWeight} kg`;
+    objBall.style.width = `${physicsState.currentWeight * 3 + 50}px`;
+    objBall.style.height = `${physicsState.currentWeight * 3 + 50}px`;
     objBall.style.backgroundColor = `rgb(${255 / physicsState.currentWeight * 2.5}, 70, 50)`;
-
+    
+    objBall.appendChild(objWeightText);
+    objBall.id = 'preview-object-text';
     objBall.classList.add('preview');
     seesawClickableArea.appendChild(objBall);
     previewObject = objBall;
@@ -132,8 +153,8 @@ seesawClickableArea.addEventListener('click', (event) => {
     const rect = seesawPlankElement.getBoundingClientRect();
     const clickX = event.clientX - rect.left;
     const centerX = rect.width / 2;
-    addWeightToSeesaw(clickX - centerX);
     createObject(physicsState.currentWeight, clickX);
+    addWeightToSeesaw(clickX - centerX);
 });
 
 // Listens for clicks on the reset button
@@ -144,7 +165,6 @@ seesawClickableArea.addEventListener('mousemove', (e) => {
     if (!previewObject) return;
     const x = e.clientX - 15;
 
-    previewObject.style.up = `-50px`;
     previewObject.style.left = `${x}px`;
 });
 
