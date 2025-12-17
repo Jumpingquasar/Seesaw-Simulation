@@ -93,6 +93,7 @@ function renderObject(weight, positionX) {
     const rect = seesawPlankElement.getBoundingClientRect();
     const centerX = rect.width / 2;
     const distanceFromCenter = positionX - centerX;
+    const rotationCorrection = (distanceFromCenter > 0 ? 42 : -42) * Math.abs(physicsState.tiltAngle) * (Math.PI / 180);
     const obj = document.createElement('div');
     const objString = document.createElement('div');
     const objBall = document.createElement('div');
@@ -104,7 +105,7 @@ function renderObject(weight, positionX) {
     objWeightText.className = 'object-weight-text';
 
     objWeightText.textContent = `${weight} kg`;
-    obj.style.setProperty('--offset-x', `${distanceFromCenter - 30}px`);
+    obj.style.setProperty('--offset-x', `${distanceFromCenter - 30 + rotationCorrection}px`);
 
     objBall.style.width = `${weight * 3 + 50}px`;
     objBall.style.height = `${weight * 3 + 50}px`;
