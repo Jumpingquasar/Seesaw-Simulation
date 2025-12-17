@@ -4,7 +4,6 @@ const seesawPlankElement = document.querySelector('#seesaw-plank');
 const resetButton = document.getElementById('reset-button');
 const logContainer = document.getElementById('log-container');
 const objects = [];
-let audioUnlocked = false;
 
 // Initialize drop sound effect
 const dropSound = new Audio('sound/pop.wav');
@@ -131,8 +130,8 @@ function addObject(weight, positionX) {
 }
 
 // Resets the entire app state
-function resetApp() {    
-    if (audioUnlocked) newPageSound.play();
+function resetApp() {
+    newPageSound.play();
     physicsState.leftWeight = 0;
     physicsState.rightWeight = 0;
     physicsState.currentWeight = 5;
@@ -157,19 +156,11 @@ seesawPlankElement.addEventListener('click', (event) => {
     saveState();
 });
 
-function unlockAudio() {
-    audioUnlocked = true;
-    document.removeEventListener('pointerdown', unlockAudio);
-}   
-
-document.addEventListener('pointerdown', unlockAudio, { once: true });
-
 // Listens for clicks on the reset button
 resetButton.addEventListener('click', resetApp);
 
 // Plays the drop sound effect
 function playDropSound() {
-    if (!audioUnlocked) return;
     const sound = dropSound.cloneNode();
     sound.volume = Math.max(0.2, physicsState.currentWeight / 15);
     sound.play();
@@ -228,14 +219,3 @@ function init() {
 
 
 init();
-
-// Expose hooks for browser-based tests
-if (typeof window !== 'undefined') {
-    window.AppTest = {
-        physicsState,
-        addWeightToSeesaw,
-        setSeesawAngle,
-        updateUI,
-        resetApp
-    };
-}
