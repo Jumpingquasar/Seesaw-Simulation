@@ -1,3 +1,5 @@
+Arda Günal - 2025
+
 # Seesaw Physics Simulation
 
 A small interactive seesaw simulation built with plain HTML, CSS, and JavaScript.
